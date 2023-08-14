@@ -1,13 +1,179 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <style>
+      .button.btn-icon {
+        border: none;
+        height: 100%;
+        font-size: 1.75rem;
+        padding: 0;
+        border-radius: 0;
+      }
+      .button {
+        background-color: transparent;
+        outline: none;
+        box-shadow: none;
+        color: inherit;
+        border: 0.15rem solid #fff;
+        border: 0.15rem solid var(--color-light, #fff);
+        display: -ms-inline-grid;
+        display: inline-grid;
+        grid-auto-flow: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 1.25rem;
+        padding: 0.5rem 2rem;
+        border-radius: 25px;
+        width: auto;
+        height: 3rem;
+        transition: all 0.1s;
+        transition-delay: 0.05s;
+      }
       body {
-        padding: 200px;
+        background: linear-gradient(rgb(95, 80, 30), rgb(42, 33, 6));
+        overflow: hidden;
+      }
+      canvas {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .settings {
+        width: 100%;
+        height: fit-content;
+        background-color: #2e2e2e;
+        position: absolute;
+        left: 50%;
+        right: 50%;
+        transform: translate(-50%);
+        z-index: 10000;
+        bottom: 0;
+      }
+      .quick-menu {
+        display: flex;
+        gap: 1rem;
+      }
+      .quick-menu .expendable-menu {
+        cursor: pointer;
+        position: relative;
+        height: 2.6em;
+        width: 2.6em;
+        z-index: 100;
+        display: grid;
+        place-items: center;
+      }
+      .quick-menu .expendable-menu span.burger:nth-child(1) {
+        top: 0.4em;
+      }
+      .quick-menu .expendable-menu span.burger:nth-child(2) {
+        top: 1.1em;
+      }
+      .quick-menu .expendable-menu span.burger:nth-child(3) {
+        top: 1.8em;
+      }
+      .quick-menu .expendable-menu span.burger {
+        position: absolute;
+        width: 2.2em;
+        height: 0.3em;
+        background-color: #fff;
+        opacity: 1;
+        transition: top 0.1s ease-in-out 0.2s, transform 0.2s ease-in-out,
+          opacity 0.2s ease-in-out 0.2s, left 0.1s ease-in-out,
+          background-color 0.1s;
+      }
+      .quick-menu .menu-items {
+        position: absolute;
+        bottom: 0;
+        width: 3em;
+        transition: all 0.5s cubic-bezier(0.29, -0.05, 0.1, 1.38);
+        transform: translateY(100%);
+        overflow: hidden;
+        background: #2e2e2e;
+        visibility: hidden;
+        z-index: 50;
+        left: 0.75em;
+      }
+      .quick-menu .menu-items .menu-item {
+        width: 3em;
+        height: 3em;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.4s;
+        display: grid;
+        place-items: center;
+        background-color: red;
+      }
+
+      .quick-menu .active span.burger:nth-child(1) {
+        top: 18px;
+        transform: rotate(45deg);
+      }
+      .quick-menu .active span.burger:nth-child(2) {
+        top: 18px;
+        opacity: 0;
+      }
+      .quick-menu .active span.burger:nth-child(3) {
+        top: 18px;
+        transform: rotate(-45deg);
+      }
+      .quick-menu .active span.burger {
+        transition: top 0.1s ease-in-out, transform 0.2s ease-in-out 0.2s,
+          opacity 0.1s ease-in-out 0.2s;
+      }
+      .quick-menu .open {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(-4.2em);
       }
     </style>
   </head>
   <body>
+    <!-- <div class="settings">
+      <div class="quick-access">
+        <div id="menu-btn" class="quick-menu">
+          <div id="burger-menu" class="expendable-menu">
+            <span class="burger"></span>
+            <span class="burger"></span>
+            <span class="burger"></span>
+          </div>
+          <div id="menu-items" class="menu-items">
+            <div class="menu-item">
+              <button class="button btn-icon"></button>
+            </div>
+            <div class="menu-item">
+              <button class="button btn-icon"></button>
+            </div>
+            <div class="menu-item">
+              <button class="button btn-icon"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="information">
+      </div>
+      <div class="actions-btns"></div>
+      <div class="win-infos"></div>
+      <button class="info-icon"></button>
+    </div> -->
   </body>
 </html>
+  <script>
+    const menuclicked = document.getElementById("menu-btn");
+    const burgermenu = document.getElementById("burger-menu");
+    const menuitems = document.getElementById("menu-items");
+    let isClassesAdded = true;
+    menuclicked.addEventListener("click", function handleClick(event) {
+      if (isClassesAdded) {
+        burgermenu.classList.add("active");
+        menuitems.classList.add("open");
+      } else {
+        burgermenu.classList.remove("active");
+        menuitems.classList.remove("open");
+      }
+      isClassesAdded = !isClassesAdded;
+    });
+  </script>
