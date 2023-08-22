@@ -2,13 +2,17 @@ import Phaser from "phaser";
 
 export default class CustomButton extends Phaser.GameObjects.Container {
     constructor(scene,x,y,upTexture,overTexture,text) {
-
+        var textStyle = {
+            fontSize: '24px',
+            color: '#ffffff',
+            fontWeight: 'bold'
+        };
         super(scene,x,y)
 
         this.upImage = scene.add.image(0,0,upTexture);
         this.overImage = scene.add.image(0,0,overTexture);
 
-        this.text = scene.add.text(0,0,text).setOrigin(0.5)
+        this.text = scene.add.text(0,0,text,textStyle).setOrigin(0.5)
         this.add(this.upImage);
         this.add(this.overImage);
         this.add(this.text)
