@@ -1,10 +1,10 @@
 
 import Phaser from "phaser";
-import PreloadScene from "./scene/PreloadScene";
+import LoadingScene from "./scene/LoadingScene";
 import Scratch from "./scene/Scratch";
 import StartScene from "./scene/StartScene";
-import CustomButton from "./scene/CustomButton";
-
+import axios from 'axios';
+axios.defaults.baseURL = "https://test-api-elrae.moobifun.pro/";
 const WIDTH = 1200;
 const HEIGHT = 800;
 
@@ -13,14 +13,17 @@ const SHARED_CONFIG = {
   height: HEIGHT,
 }
 
-const Scenes = [PreloadScene,StartScene,Scratch];
+const Scenes = [LoadingScene, Scratch];
 
 const initScenes = () => Scenes.map((Scene) => new Scene(SHARED_CONFIG))
 
 const config = {
   type: Phaser.AUTO,
   ...SHARED_CONFIG,
-  pixelArt:true,
+  scale: {
+    mode: Phaser.Scale.FIT,
+    parent: 'phaser-scratch',
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -28,7 +31,7 @@ const config = {
     },
   },
   scene: initScenes()
-}; 
+};
 
-  new Phaser.Game(config);
+new Phaser.Game(config);
 

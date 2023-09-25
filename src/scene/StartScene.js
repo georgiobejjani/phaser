@@ -1,76 +1,68 @@
-import BaseScene from "./BaseScene";
-import CustomButton from "./CustomButton";
-export default class StartScene extends BaseScene {
-  constructor(config) {
-    super("StartScene", { ...config });
-    this.config = config;
-    this.manWalking = null;
-    this.lineHeight = 70;
+// const COLOR_PRIMARY = 0x4e342e;
+// const COLOR_LIGHT = 0x7b5e57;
+// const COLOR_DARK = 0x260e04;
 
-    this.menu = [
-      { scene: "Scratch", text: "Play Now" },
-      { scene: "RulesScene", text: "How To Play" },
-    ];
-  }
+// export default class StartScene extends Phaser.Scene {
+//     constructor() {
+//         super({
+//             key: 'examples'
+//         })
+//     }
 
-  create() {
-    super.create();
-    this.createMan();
-    this.createMenu();
-  }
+//     preload() { 
+//         this.load.scenePlugin({
+//             key: 'rexuiplugin',
+//             url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexuiplugin.min.js',
+//             sceneKey: 'rexUI'
+//         });      
+//     }
 
-  update() {
-    this.recycleMan();
-  }
+//     create() {
+//         var panel = this.rexUI.add.scrollablePanel({
+//             x: 400, y: 300,
+//             height: 400,
 
-  createMenu() {
-    let lastMenuPositionY = 0;
-    this.menu.forEach((menuItem) => {
-      console.log(menuItem);
-      const menuPosition = [
-        this.screenCenter[0],
-        this.screenCenter[1] - 50 + lastMenuPositionY,
-      ];
-      const button = new CustomButton(
-        this,
-        ...menuPosition,
-        "button2",
-        "button3",
-        menuItem.text
-      );
-      const buttonClick = this.sound.add("buttonClick", { loop: false });
-      this.add.existing(button);
-      button
-        .setInteractive()
-        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-          this.scene.start(menuItem.scene);
-          buttonClick.play();
-        });
-      lastMenuPositionY += this.lineHeight;
-    });
-  }
+//             scrollMode: 0,
 
-  createMan() {
-    this.manWalking = this.physics.add
-      .sprite(this.config.width, this.config.height - 400, "manWalk")
-      .setOrigin(0)
-      .setScale(1)
-      .setFlipX(true)
+//             background: this.rexUI.add.roundRectangle({ strokeColor: 0xff0000, strokeWidth: 2 }),
+//             panel: {
+//                 child: CreatePanel(this),
+//             },
 
-    this.manWalking.body.velocity.x = -100;
+//             slider: {
+//                 track: this.rexUI.add.roundRectangle({ width: 20, height: 20, radius: 10, color: COLOR_DARK }),
+//                 thumb: this.rexUI.add.roundRectangle({ radius: 13, color: COLOR_LIGHT }),
+//             },
 
-    this.anims.create({
-      key: "walk",
-      frames: this.anims.generateFrameNumbers("manWalk"),
-      frameRate: 8,
-      repeat: -1,
-    });
-    this.manWalking.play("walk");
-  }
+//             space: { panel: 4 }
+//         })
+//             .layout()
 
-  recycleMan() {
-    if (this.manWalking.getBounds().right < 0) {
-      this.createMan();
-    }
-  }
-}
+//         panel.scrollToChild(panel.getByName('item-20', true));
+//     }
+
+//     update() { }
+// }
+
+// var CreatePanel = function (scene) {
+//     var panel = scene.rexUI.add.sizer({
+//         width: 100,
+//         orientation: 'y',
+//         space: { item: 4 }
+//     })
+
+//     for (var i = 0; i < 50; i++) {
+//         var name = `item-${i}`;
+//         var label = scene.rexUI.add.label({
+//             background: scene.rexUI.add.roundRectangle({
+//                 color: COLOR_PRIMARY
+//             }),
+//             text: scene.add.text(0, 0, name),
+//             space: { left: 10, right: 10, top: 10, bottom: 10 },
+//             name: name,
+//         })
+//         panel.add(label, { expand: true });
+//     }
+
+//     return panel;
+// }

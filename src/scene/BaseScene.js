@@ -1,122 +1,94 @@
 import Phaser from "phaser";
 
 class BaseScene extends Phaser.Scene {
-    constructor(key,config) { 
-        super(key); 
+    constructor(key, config) {
+        super(key);
         this.config = config;
         this.image = null;
         this.scaleFactor = null;
-        this.screenCenter = [config.width / 2, config.height/2];
+        this.screenCenter = [config.width / 2, config.height / 2];
         this.particles = null;
         this.menuGroup = null;
         this.isMenuOpen = false;
-        this.menuItem2Texture = 'volume_Icon'
-        this.stormSound = true;
-    }
-    
-    create() {
-       this.createbackground();
-       this.storm = this.sound.add("storm", { loop: true });
-       this.storm.play();
-       this.addRain();
-       this.createCollapseMenu();
+        this.menuItem2Texture = 'unmute-icon';
+        this.menuItem3Texture = 'expand-icon';
+        this.music = true;
     }
 
+    create() {
+        this.createbackground();
+        this.bgmusic = this.sound.add("bg-music", { loop: true });
+        this.bgmusic.play();
+        this.createCollapseMenu();
+        this.buttonClick = this.sound.add("buttonClick", { loop: false });
+
+    }
 
     createCollapseMenu() {
-        this.menuGroup = this.add.group();
-
-        let menuButon = this.add.image(this.config.width -10, 10,'settings_Icon').setInteractive().setScale(0.2).setOrigin(1,0)
-        menuButon.setInteractive();
-        menuButon.on('pointerdown',this.toggleMenu,this);
-
-        let menuItem1 = this.createMenuItem(this,1,this.config.width -10,80,'volume_Icon');
-        let menuItem2 = this.createMenuItem(this,2,this.config.width -10,150,'expand_Icon');
-        let menuItem3 = this.createMenuItem(this,3,this.config.width -10,220,'back_Icon');
-        
-        this.menuGroup.add(menuItem1);
-        this.menuGroup.add(menuItem2);
-        this.menuGroup.add(menuItem3);
-        
-        this.menuGroup.setVisible(false);
-       
+        this.settingsWrapper = this.add.image(1100, 400, 'SettingsCnt').setDisplaySize(80, 510).setDepth(1)        // this.muteIcon = new CustomButton(this,1100,300,'unmute-icon','unmute-icon','mute-icon',() => this.playAgainFct(),50,50,'icon')
+        // this.expandIcon = new CustomButton(this,1100,470,'expand-icon','expand-icon','none',() => this.scale.startFullscreen(),50,50,'icon')
+        this.createMenuItem(this, 1, 1100, 190, 'info-icon');
+        this.createMenuItem(this, 2, 1100, 280, 'TicketInfo');
+        this.createMenuItem(this, 3, 1100, 390, 'unmute-icon');
+        this.createMenuItem(this, 4, 1100, 500, 'expand-icon');
+        this.createMenuItem(this, 5, 1100, 610, 'exit-icon');
     }
 
-    createMenuItem(scene,id,x,y,image) {
-        let menuItem = scene.add.image(x,y,image).setScale(0.2).setOrigin(1,0)
+    createMenuItem(scene, id, x, y, image) {
+        let menuItem = scene.add.image(x, y, image).setDisplaySize(40, 40)
         menuItem.setInteractive();
-
+        menuItem.setDepth(2);
         menuItem.on('pointerover', () => {
             scene.input.setDefaultCursor('pointer');
         });
-    
+
         menuItem.on('pointerout', () => {
             scene.input.setDefaultCursor('auto');
         });
 
-        if(id === 1) {
+        if (id === 1) {
             menuItem.on('pointerdown', () => {
-                this.stormSound = !this.stormSound
-                console.log('ji',this.stormSound)
-                this.stormSound ? this.storm.play() : this.storm.stop();
-                this.menuItem2Texture = (this.menuItem2Texture === 'volume_Icon') ? 'volume-muted_Icon' : 'volume_Icon';
-                menuItem.setTexture(this.menuItem2Texture);
+                this.events.emit('openInfo');
+                this.buttonClick.play();
+
             });
-        } 
-        if(id === 2) {
+        }
+        if (id === 2) {
             menuItem.on('pointerdown', () => {
-                this.scale.startFullscreen();
+                this.events.emit('opentckts');
+                this.buttonClick.play();
+
+            });
+        }
+        if (id === 3) {
+            menuItem.on('pointerdown', () => {
+                console.log('touchef', this.bgmusic)
+                this.buttonClick.play();
+                this.music = !this.music
+                this.music ? this.bgmusic.play() : this.bgmusic.stop();
+                this.menuItem2Texture = (this.menuItem2Texture === 'unmute-icon') ? 'mute-icon' : 'unmute-icon';
+                menuItem.setTexture(this.menuItem2Texture);
             })
         }
-
-        return menuItem
-    }
-
-    toggleMenu() {
-        this.isMenuOpen = !this.isMenuOpen;
-
-        if(this.isMenuOpen) {
-            this.menuGroup.setVisible(true);
-            this.tweens.add({
-                targets: this.menuGroup.getChildren(),
-                alpha: 1,
-                duration: 300,
-                ease: 'Linear'
-            });
-        } else {
-            this.tweens.add({
-                targets: this.menuGroup.getChildren(),
-                alpha: 0,
-                duration: 300,
-                ease: 'Linear',
-                onComplete: () => {
-                    this.menuGroup.setVisible(false);
+        if (id === 4) {
+            menuItem.on('pointerdown', () => {
+                this.buttonClick.play();
+                this.menuItem3Texture = (this.menuItem3Texture === 'expand-icon') ? 'Noexpand-icon' : 'expand-icon';
+                menuItem.setTexture(this.menuItem3Texture);
+                if (this.scale.isFullscreen) {
+                    this.scale.stopFullscreen();
+                } else {
+                    this.scale.startFullscreen();
                 }
-            });
+            })
         }
-       
-    }
-
-    addRain() {
-        this.particles = this.add.particles('rainDrop')
-        this.particles.createEmitter({
-         x: {min: 0, max: 1200},
-         y: 0 ,
-         lifespan: {min: 5, max: 1000},
-         speedY: 1000,
-         scaleY: .2,
-         scaleX: .01,
-         quantity: {min: 2, max: 3},
-         blendMode: 'LIGHTEN',
-         });
-
-         console.log('particles',this.particles)
+        return menuItem
     }
 
     createbackground() {
         this.image = this.add.image(0, 0, 'bg-game');
         this.scaleFactor = this.config.height / this.image.height;
-        this.image.setScale(this.scaleFactor).setPosition(this.config.width / 2, this.config.height / 2); 
+        this.image.setScale(this.scaleFactor).setPosition(this.config.width / 2, this.config.height / 2);
     }
 
 }
