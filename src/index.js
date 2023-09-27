@@ -2,7 +2,6 @@
 import Phaser from "phaser";
 import LoadingScene from "./scene/LoadingScene";
 import Scratch from "./scene/Scratch";
-import StartScene from "./scene/StartScene";
 import axios from 'axios';
 axios.defaults.baseURL = "https://test-api-elrae.moobifun.pro/";
 const WIDTH = 1200;

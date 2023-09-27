@@ -2,10 +2,7 @@ import BaseScene from "./BaseScene";
 import CustomButton from "./CustomButton";
 import axios from "axios";
 const COVER_TEXTURE = "ball_gratage";
-const BOARD = "board";
-const BOARD_INFO = "info-board";
 const EMITTER = "emitter";
-const PANEL = "panel";
 const UNSCRATCHED = "UnscratchedBg";
 
 export default class Scratch extends BaseScene {
@@ -36,6 +33,7 @@ export default class Scratch extends BaseScene {
 
 		this.token = urlParams.get("token");
 		this.state = {
+			targetScore:0,
 			myArray: [],
 			ticketId: null,
 			winningValue: "",
@@ -59,9 +57,16 @@ export default class Scratch extends BaseScene {
 		this.events.on("openInfo", () => {
 			this.overlayContainer.setVisible(true);
 			this.InfoContainer.setVisible(true);
+			this.overlayContainerTckts.setVisible(false);
+			this.TcktsContainer.setVisible(false);
 		});
 
 		this.events.on("opentckts", () => {
+			if(this.state.ticketsInfo==[]) {
+				this.getInfos();
+			}
+			this.overlayContainer.setVisible(false);
+			this.InfoContainer.setVisible(false);
 			this.overlayContainerTckts.setVisible(true);
 			this.TcktsContainer.setVisible(true);
 		});
@@ -83,7 +88,7 @@ export default class Scratch extends BaseScene {
 			200,
 			40,
 			"button",
-			"P L A Y  A G A I N"
+			"R E J O U E R"
 		);
 
 		this.scratchAllBtn = new CustomButton(
@@ -97,7 +102,7 @@ export default class Scratch extends BaseScene {
 			200,
 			40,
 			"button",
-			"S C R A T C H  A L L",
+			"G R A T T E R   T O U T",
 			2
 		);
 
@@ -111,7 +116,7 @@ export default class Scratch extends BaseScene {
 		this.resultContainerLoosing.setAlpha(0);
 
 		this.textloosing = this.add
-			.text(0, -10, "OOPS, \nTry Again!", {
+			.text(0, -10, "OOPS, \nRéessayer!", {
 				fontSize: "40px",
 				fill: "#fff",
 				fontFamily: "Black Ops One",
@@ -125,6 +130,7 @@ export default class Scratch extends BaseScene {
 				align: "center",
 			})
 			.setOrigin(0.5);
+
 		this.text = this.add
 			.text(0, -40, `GAIN \n${this.currentScore}`, {
 				fontSize: "40px",
@@ -160,10 +166,10 @@ export default class Scratch extends BaseScene {
 			});
 	}
 
-	LoaderAnimation() {
+	LoaderAnimation(x, y) {
 		this.spinner = this.add.sprite(
-			this.screenCenter[0] + 400,
-			this.screenCenter[1] - 330,
+			x,
+			y,
 			"loadingWheel"
 		);
 		this.spinner.setScale(0.7);
@@ -210,14 +216,19 @@ export default class Scratch extends BaseScene {
 		this.overlayContainerTckts.setVisible(false);
 		this.TcktsContainer.setVisible(false);
 		this.TcktsContainer.add(closeButton);
-
-		console.log("hiii", values);
-		const scrollContainer = this.add.container(0, 0);
-		const containerWidth = 800;
-		const containerHeight = 500;
+		const title = ['id','Date','Status','Prix','Gains']
+		this.title = this.add.text(
+			-60,
+			-50,
+			`${title[0].padEnd(10,' ')+'     		'}${title[1].padStart(10,' ')+'     	'}${title[2].padStart(10,' ')+'     		'}${title[3].padStart(10,' ')+'     		'}${title[4].padStart(10,' ')+'     '}`,
+			{ color: "#000000", fontFamily: "Inter", fontSize: "20px" }
+		)
+		const scrollContainer = this.add.container(-100, 0);
+		const containerWidth = 1100;
+		const containerHeight = 350;
 		const mask = this.make.graphics();
-		mask.fillStyle(0xffffff);
-		mask.fillRect(0, 0, containerWidth, containerHeight);
+		mask.fillStyle(0x000);
+		mask.fillRect(0, 250, containerWidth, containerHeight);
 
 		scrollContainer.setInteractive(
 			new Phaser.Geom.Rectangle(0, 0, containerWidth, containerHeight),
@@ -226,36 +237,84 @@ export default class Scratch extends BaseScene {
 
 		var i = 0;
 		values.map((itemss) => {
-			const item = this.add.text(
+			const id = `${itemss.id}`;
+			const purchaseDate = new Date(itemss.purchaseDate).toISOString().split('T')[0];
+			const status = `${itemss.status}`;
+			const price = `${itemss.price}`;
+			const prize = `${itemss.prize}`;
+		
+			// Find the maximum width among the values
+			const maxWidth = Math.max(id.length, purchaseDate.length, status.length, price.length, prize.length);
+			// Pad the values with spaces to match= the maximum width
+			const formattedId = id.padEnd(maxWidth , ' ');
+			const formattedPurchaseDate = purchaseDate.padStart(maxWidth, ' ');
+			const formattedStatus = status.padStart(maxWidth, ' ');
+			const formattedPrice = price.padStart(maxWidth, ' ');
+			const formattedPrize = prize.padStart(maxWidth, ' ');
+			const text = this.add.text(
 				10,
 				i * 30,
-				`${itemss.id}\t\t${itemss.purchaseDate}\t\t\t\t${itemss.status}\t\t\t\t${itemss.price}\t\t\t\t${itemss.prize}`,
-				{ color: "#000000", fontFamily: "Black Ops One", fontSize: "20px" }
+				`${formattedId+'     		'}${formattedPurchaseDate+'	'}${formattedStatus+'     '}${formattedPrice+'     		'}${formattedPrize}`,
+				{ color: "#000000", fontFamily: "Inter", fontSize: "20px" }
 			);
-			scrollContainer.add(item);
+		
+			scrollContainer.add(text);
 			i++;
 		});
 
 		scrollContainer.mask = new Phaser.Display.Masks.GeometryMask(this, mask);
 
 		this.input.on("wheel", (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
-			scrollContainer.y += deltaY * 0.5; // Adjust the scroll speed as needed
+			scrollContainer.y += deltaY * 0.5;
+			scrollContainer.y = Phaser.Math.Clamp(scrollContainer.y, -values.length * 30 + 30, 0); // Adjust the scroll speed as needed
 		});
-		this.TcktsContainer.add(scrollContainer);
+
+		let isScrolling = false;
+		let startY = 0;
+
+		this.input.on("pointerdown", (pointer) => {
+			isScrolling = true;
+			startY = pointer.y;
+		});
+
+		this.input.on("pointermove", (pointer) => {
+			if (isScrolling) {
+				const deltaY = pointer.y - startY;
+				scrollContainer.y += deltaY * 0.5; 
+				startY = pointer.y;
+
+				scrollContainer.y = Phaser.Math.Clamp(
+					scrollContainer.y,
+					-values.length * 30 + 30,
+					0
+				); 
+			}
+		});
+
+		// Listen for pointer up event
+		this.input.on("pointerup", () => {
+			isScrolling = false;
+		});
+
+
+		this.TcktsContainer.add([scrollContainer,this.title]);
 	}
 
 	getInfos() {
-		console.log("ggo");
 		let token = this.token;
 		let type = 8;
 		let pagesize = 1000;
 		let pagenb = 0;
 		let url = `/scratch-api/tokens/${token}/tickets?Type=${type}&PageNumber=${pagenb}&PageSize=${pagesize}`;
+		this.LoaderAnimation(this.screenCenter[0] + 500, this.screenCenter[1] - 110);
+		this.events.emit('hideIcon');
 		return new Promise((resolve, reject) => {
 			axios
 				.get(url)
 				.then((response) => {
 					if (response.data.tickets) {
+						this.events.emit('showIcon');
+						this.spinner.destroy();
 						let temp = [];
 						response.data.tickets
 							.filter((item) => item.ticketState !== "PENDING")
@@ -263,7 +322,6 @@ export default class Scratch extends BaseScene {
 								temp.push(val);
 							});
 						this.state.ticketsInfo = temp;
-						console.log("infos", this.state.ticketsInfo);
 						resolve();
 					}
 				})
@@ -284,6 +342,7 @@ export default class Scratch extends BaseScene {
 				.get(url)
 				.then((response) => {
 					if (response.data.status === 1 && response.data.tickets.length > 0) {
+						this.state.targetScore = response.data.tickets[0].prize
 						this.state.ticketId = response.data.tickets[0].id;
 						this.state.myArray = response.data.tickets[0].ticketValues;
 						this.state.winningValue = response.data.tickets[0].winningValue;
@@ -305,7 +364,6 @@ export default class Scratch extends BaseScene {
 	}
 
 	onBuyScratch(number, scratchType) {
-		console.log("buy");
 		const data = {
 			token: this.token,
 			type: scratchType,
@@ -313,7 +371,8 @@ export default class Scratch extends BaseScene {
 			mobileNumber: "23479199773",
 		};
 		let url = `/scratch-api/tickets?isWallet=true`;
-		this.LoaderAnimation();
+		this.LoaderAnimation(this.screenCenter[0] + 400,
+			this.screenCenter[1] - 330);
 		this.BuyButton.disable();
 		return new Promise((resolve, reject) => {
 			axios
@@ -340,15 +399,12 @@ export default class Scratch extends BaseScene {
 		let pagesize = 1000;
 		let pagenb = "0&isFinished=0";
 		let url = `/scratch-api/tokens/${token}/tickets?Type=${type}&pageSize=${pagesize}&pageNumber=${pagenb}`;
-		console.log("ppp", gameId);
 		return new Promise((resolve, reject) => {
 			axios
 				.get(url)
 				.then((response) => {
-					console.log("unplayed", response);
 					if (response.data.status == 1 && response.data.tickets != null) {
 						this.state.availableTickets = response.data.numberOfTickets;
-						// console.log('numberoftickets',response.data.numberOfTickets);
 						this.ticketAvailableNumber.setText(
 							`${response.data.numberOfTickets}`
 						);
@@ -395,7 +451,6 @@ export default class Scratch extends BaseScene {
 			let arrayAhbal = [];
 			if (type !== "onevalue") {
 				values.map((object) => {
-					console.log(object.value);
 					arrayAhbal = arrayAhbal.concat(object.value);
 				});
 
@@ -437,7 +492,8 @@ export default class Scratch extends BaseScene {
 		} else return;
 	}
 
-	animateScore(type) {
+	animateScore(type,score) {
+		console.log('targetscore',score)
 		this.time.delayedCall(1000, () => {
 			if (type === "winning") {
 				this.winningsound.play();
@@ -456,14 +512,14 @@ export default class Scratch extends BaseScene {
 				});
 				this.tweens.add({
 					targets: { score: this.initialScore },
-					score: this.targetScore,
+					score: score,
 					duration: 800,
 					onUpdate: (tween) => {
 						this.currentScore = Math.round(tween.getValue());
 						this.text.setText(`Gain \n${this.currentScore}`);
 					},
 					onComplete: () => {
-						this.currentScore = this.targetScore;
+						this.currentScore = score;
 						this.text.setText(`Gain \n${this.currentScore}`);
 					},
 				});
@@ -689,7 +745,7 @@ export default class Scratch extends BaseScene {
 			this.playAgain.enable();
 			this.scratchAllBtn.disable();
 		}
-		if (this.state.availableTickets === 0) {
+		if (this.state.availableTickets === 0 || this.isScratched) {
 			this.scratchAllBtn.disable();
 		} else {
 			this.scratchAllBtn.enable();
@@ -729,7 +785,6 @@ export default class Scratch extends BaseScene {
 		let current = data.filter((v, i) => (i + 1) % 4 == 0 && v > 0).length;
 		let percentage = ((current / full) * 100).toFixed(2);
 		if (percentage <= 50) {
-			console.log("this.state.winning", this.state.winningValue);
 			this.playTicket(this.state.ticketId, 8);
 			this.coverHelperCanvas.context.clearRect(
 				0,
@@ -742,17 +797,16 @@ export default class Scratch extends BaseScene {
 			this.destroyParticles();
 			this.checkTimer.remove();
 			this.isScratched = true;
-			this.score += 50;
+			// this.score += 50;
 			if (this.state.winningValue !== "losing") {
-				this.animateScore("winning");
+				this.animateScore("winning",this.state.targetScore);
 			} else {
-				this.animateScore("loosing");
+				this.animateScore("loosing",0);
 			}
 		}
 	}
 
 	addTickets() {
-		console.log("hiii");
 		this.ticketCount++;
 		this.ticketCounter.setText(`${this.ticketCount}`);
 	}
@@ -767,7 +821,6 @@ export default class Scratch extends BaseScene {
 
 	buyTicket() {
 		if (this.ticketCount > 0) {
-			console.log("this.ticket", this.ticketCount);
 			this.ticketToPlay += this.ticketCount;
 			this.onBuyScratch(parseFloat(this.ticketCount), 8);
 			this.ticketCount = 0;
@@ -859,7 +912,7 @@ export default class Scratch extends BaseScene {
 			150,
 			40,
 			"button",
-			"B U Y"
+			"A C H E T T E Z"
 		);
 		const AddButton = new CustomButton(
 			this,
@@ -926,6 +979,8 @@ export default class Scratch extends BaseScene {
 		this.createTexture();
 		this.scratchOff();
 		this.getTicket();
-		this.stopManWalkingAnimation();
+		if (this.state.winningValue !== "losing") {
+			this.stopManWalkingAnimation();
+		}
 	}
 }

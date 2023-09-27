@@ -13,6 +13,7 @@ class BaseScene extends Phaser.Scene {
         this.menuItem2Texture = 'unmute-icon';
         this.menuItem3Texture = 'expand-icon';
         this.music = true;
+        this.menuItem2 = null;
     }
 
     create() {
@@ -21,14 +22,25 @@ class BaseScene extends Phaser.Scene {
         this.bgmusic.play();
         this.createCollapseMenu();
         this.buttonClick = this.sound.add("buttonClick", { loop: false });
-
+        this.events.on("hideIcon", () => {
+            if (this.menuItem2) {
+                this.menuItem2.setVisible(false);
+            }
+        });
+        this.events.on("showIcon", () => {
+            if (this.menuItem2) {
+                this.menuItem2.setVisible(true);
+            }
+        });
     }
+
+
 
     createCollapseMenu() {
         this.settingsWrapper = this.add.image(1100, 400, 'SettingsCnt').setDisplaySize(80, 510).setDepth(1)        // this.muteIcon = new CustomButton(this,1100,300,'unmute-icon','unmute-icon','mute-icon',() => this.playAgainFct(),50,50,'icon')
         // this.expandIcon = new CustomButton(this,1100,470,'expand-icon','expand-icon','none',() => this.scale.startFullscreen(),50,50,'icon')
         this.createMenuItem(this, 1, 1100, 190, 'info-icon');
-        this.createMenuItem(this, 2, 1100, 280, 'TicketInfo');
+       this.menuItem2 =  this.createMenuItem(this, 2, 1100, 280, 'TicketInfo');
         this.createMenuItem(this, 3, 1100, 390, 'unmute-icon');
         this.createMenuItem(this, 4, 1100, 500, 'expand-icon');
         this.createMenuItem(this, 5, 1100, 610, 'exit-icon');
@@ -57,7 +69,7 @@ class BaseScene extends Phaser.Scene {
             menuItem.on('pointerdown', () => {
                 this.events.emit('opentckts');
                 this.buttonClick.play();
-
+                
             });
         }
         if (id === 3) {

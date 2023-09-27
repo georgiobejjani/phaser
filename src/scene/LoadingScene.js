@@ -8,13 +8,15 @@ class LoadingScene extends Phaser.Scene {
 
     preload() {
 
-        const WebFontConfig = {
-            google: {
-                families: ['Inter', 'Black Ops One']
-            },
-        };
+      WebFont.load({
+        google: {
+            families: ['Inter', 'Black Ops One'],
+        },
+        active: () => {
+            // Font is loaded, start the main scene
+        },
+    });
 
-        this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
         this.load.image("bg-game", "assets/scratch/bg_scratch.png");
         this.load.image("EA1", "assets/scratch/values/eagle1.png");
         this.load.image("EA2", "assets/scratch/values/eagle2.png");
@@ -27,7 +29,6 @@ class LoadingScene extends Phaser.Scene {
         this.load.image("EA9", "assets/scratch/values/tiger1.png");
         this.load.image("EA10", "assets/scratch/values/tiger2.png");
         this.load.image('ball_gratage', "assets/scratch/ball_Scratch.png");
-        this.load.image('board', "assets/scratch/game_bg-Scratch.png");
         this.load.image('info-board', "assets/scratch/info-container.png")
         this.load.image('SettingsCnt', "assets/scratch/settingsCnt_scratch.png")
         this.load.image('UnscratchedBg', "assets/scratch/unscratched_bg.png")
@@ -35,20 +36,12 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('ticketsWrapper', "assets/scratch/buttons/tickets_btn.png")
         this.load.image('availableTickets', "assets/scratch/buttons/available_tcks.png")
         this.load.image('orangelogo', "assets/scratch/loadinglogo.png");
-        this.load.image('playAgainOg_Hovered', "assets/scratch/buttons/playagainOg_scratch.png")
-        this.load.image('playagainw_Unhovered', "assets/scratch/buttons/playagainW_scratch.png")
         this.load.image('ticketPrice', "assets/scratch/ticketPrice.png");
         this.load.image('addTicketOg_Hovered', "assets/scratch/buttons/addTicketOg_scratch.png")
         this.load.image('addTicketW_UnHovered', "assets/scratch/buttons/addTicketW_scratch.png")
         this.load.image('TicketInfo', "assets/scratch/buttons/ticketInfo_btn.png")
         this.load.image('removeTicketOg_Hovered', "assets/scratch/buttons/removeTicketOg_Hovered.png")
         this.load.image('removeTicketW_UnHovered', "assets/scratch/buttons/removeTicketW_UnHovered.png")
-
-        this.load.image('buyTicketOg_Hovered', "assets/scratch/buttons/buyTicketOg_scratch.png")
-        this.load.image('buyTicketW_UnHovered', "assets/scratch/buttons/buyTicketW_scratch.png")
-
-        this.load.image('ScratchAllOg_Hovered', "assets/scratch/buttons/scratchAllOg_scratch.png")
-        this.load.image('ScratchAllW_UnHovered', "assets/scratch/buttons/scratchAllW_scratch.png")
 
         this.load.image('whiteBtn', "assets/scratch/buttons/white_button.png");
         this.load.image('yellowBtn', "assets/scratch/buttons/yellow_btn.png");
@@ -85,7 +78,7 @@ class LoadingScene extends Phaser.Scene {
             // Clean up and start the main scene
 
             this.time.delayedCall(1000, () => {
-                this.stopManWalkingAnimation();
+                this.stopBallAnimation();
                 this.scene.start('Scratch');
             });
         });
@@ -113,7 +106,7 @@ class LoadingScene extends Phaser.Scene {
         this.loadingAnimation.play("rotate");
     }
 
-    stopManWalkingAnimation() {
+    stopBallAnimation() {
         this.loadingAnimation.anims.stop('walk');
         this.loadingAnimation.setFrame(0);
         this.loadingAnimation.destroy();
