@@ -37,13 +37,12 @@ class BaseScene extends Phaser.Scene {
 
 
     createCollapseMenu() {
-        this.settingsWrapper = this.add.image(1100, 400, 'SettingsCnt').setDisplaySize(80, 510).setDepth(1)        // this.muteIcon = new CustomButton(this,1100,300,'unmute-icon','unmute-icon','mute-icon',() => this.playAgainFct(),50,50,'icon')
+        this.settingsWrapper = this.add.image(1100, 400, 'SettingsCnt').setDisplaySize(80, 470).setDepth(1)        // this.muteIcon = new CustomButton(this,1100,300,'unmute-icon','unmute-icon','mute-icon',() => this.playAgainFct(),50,50,'icon')
         // this.expandIcon = new CustomButton(this,1100,470,'expand-icon','expand-icon','none',() => this.scale.startFullscreen(),50,50,'icon')
-        this.createMenuItem(this, 1, 1100, 190, 'info-icon');
-       this.menuItem2 =  this.createMenuItem(this, 2, 1100, 280, 'TicketInfo');
-        this.createMenuItem(this, 3, 1100, 390, 'unmute-icon');
-        this.createMenuItem(this, 4, 1100, 500, 'expand-icon');
-        this.createMenuItem(this, 5, 1100, 610, 'exit-icon');
+        this.createMenuItem(this, 1, 1100, 240, 'info-icon');
+       this.menuItem2 =  this.createMenuItem(this, 2, 1100, 330, 'TicketInfo');
+        this.createMenuItem(this, 3, 1100, 430, 'unmute-icon');
+        this.createMenuItem(this, 4, 1100, 540, 'expand-icon');
     }
 
     createMenuItem(scene, id, x, y, image) {
@@ -94,6 +93,7 @@ class BaseScene extends Phaser.Scene {
                 }
             })
         }
+       
         return menuItem
     }
 

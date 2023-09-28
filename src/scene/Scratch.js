@@ -29,6 +29,7 @@ export default class Scratch extends BaseScene {
 		this.targetScore = 150;
 		this.animationDuration = 2000;
 		this.currentScore = this.initialScore;
+		this.type = 13;
 		const urlParams = new URLSearchParams(window.location.search);
 
 		this.token = urlParams.get("token");
@@ -194,7 +195,7 @@ export default class Scratch extends BaseScene {
 				fontSize: "32px",
 				fill: "#000",
 			})
-			.setDepth(2)
+			.setDepth(12)
 			.setOrigin(1);
 		closeButton.setInteractive();
 
@@ -221,10 +222,10 @@ export default class Scratch extends BaseScene {
 			-60,
 			-50,
 			`${title[0].padEnd(10,' ')+'     		'}${title[1].padStart(10,' ')+'     	'}${title[2].padStart(10,' ')+'     		'}${title[3].padStart(10,' ')+'     		'}${title[4].padStart(10,' ')+'     '}`,
-			{ color: "#000000", fontFamily: "Inter", fontSize: "20px" }
+			{ color: "#000000", fontFamily: "Black Ops One", fontSize: "20px" }
 		)
 		const scrollContainer = this.add.container(-100, 0);
-		const containerWidth = 1100;
+		const containerWidth = 900;
 		const containerHeight = 350;
 		const mask = this.make.graphics();
 		mask.fillStyle(0x000);
@@ -302,11 +303,11 @@ export default class Scratch extends BaseScene {
 
 	getInfos() {
 		let token = this.token;
-		let type = 8;
+		let type = this.type;
 		let pagesize = 1000;
 		let pagenb = 0;
 		let url = `/scratch-api/tokens/${token}/tickets?Type=${type}&PageNumber=${pagenb}&PageSize=${pagesize}`;
-		this.LoaderAnimation(this.screenCenter[0] + 500, this.screenCenter[1] - 110);
+		this.LoaderAnimation(this.screenCenter[0] + 500, this.screenCenter[1] - 70);
 		this.events.emit('hideIcon');
 		return new Promise((resolve, reject) => {
 			axios
@@ -333,7 +334,7 @@ export default class Scratch extends BaseScene {
 
 	getTicket() {
 		let token = this.token;
-		let type = 8;
+		let type = this.type;
 		let pagesize = 1000;
 		let pagenb = "0&isFinished=0";
 		let url = `/scratch-api/tokens/${token}/tickets?Type=${type}&pageSize=${pagesize}&pageNumber=${pagenb}`;
@@ -395,7 +396,7 @@ export default class Scratch extends BaseScene {
 
 	getUnplayed(gameId) {
 		let token = this.token;
-		let type = 8;
+		let type = this.type;
 		let pagesize = 1000;
 		let pagenb = "0&isFinished=0";
 		let url = `/scratch-api/tokens/${token}/tickets?Type=${type}&pageSize=${pagesize}&pageNumber=${pagenb}`;
@@ -785,7 +786,7 @@ export default class Scratch extends BaseScene {
 		let current = data.filter((v, i) => (i + 1) % 4 == 0 && v > 0).length;
 		let percentage = ((current / full) * 100).toFixed(2);
 		if (percentage <= 50) {
-			this.playTicket(this.state.ticketId, 8);
+			this.playTicket(this.state.ticketId, this.type);
 			this.coverHelperCanvas.context.clearRect(
 				0,
 				0,
@@ -822,7 +823,7 @@ export default class Scratch extends BaseScene {
 	buyTicket() {
 		if (this.ticketCount > 0) {
 			this.ticketToPlay += this.ticketCount;
-			this.onBuyScratch(parseFloat(this.ticketCount), 8);
+			this.onBuyScratch(parseFloat(this.ticketCount), this.type);
 			this.ticketCount = 0;
 			this.ticketCounter.setText(`${this.ticketCount}`);
 		}

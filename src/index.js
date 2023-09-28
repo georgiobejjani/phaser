@@ -3,7 +3,7 @@ import Phaser from "phaser";
 import LoadingScene from "./scene/LoadingScene";
 import Scratch from "./scene/Scratch";
 import axios from 'axios';
-axios.defaults.baseURL = "https://test-api-elrae.moobifun.pro/";
+axios.defaults.baseURL = "http://api.test-ci.moobifun.com/";
 const WIDTH = 1200;
 const HEIGHT = 800;
 

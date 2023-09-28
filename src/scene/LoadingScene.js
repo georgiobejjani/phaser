@@ -47,7 +47,6 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('yellowBtn', "assets/scratch/buttons/yellow_btn.png");
         this.load.image('greyBtn', "assets/scratch/buttons/grey_btn.png");
 
-        this.load.image('exit-icon', "assets/scratch/buttons/exit_icon-settings.png");
         this.load.image('expand-icon', "assets/scratch/buttons/expand_icon-settings.png");
         this.load.image('Noexpand-icon', "assets/scratch/buttons/Noexpand_icon-settings.png");
         this.load.image('mute-icon', "assets/scratch/buttons/mute-sound_icon-settings.png");
